@@ -1,3 +1,14 @@
+*.html
+*.mp4
+*.txt
+runs/
+*.pt
+*.engine
+*.onnx
+
+convert_to_trt.py
+
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]
