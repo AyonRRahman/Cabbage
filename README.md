@@ -1,4 +1,4 @@
-# Cabbage Project 🥬
+# Cabbage Project 
 
 [![Python](https://img.shields.io/badge/python-3.10-blue)](https://www.python.org/)
 [![Conda](https://img.shields.io/badge/conda-environment-green)](https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html)
@@ -30,12 +30,12 @@ python inference_map_tensorrt.py
 # 4. Torch inference (optional, slightly outdated)
 python world_map_project_new.py
 
----
+```
 
 ## Output
-Running the scripts will generate the following files:
-1 .mp4 — Video with cabbage annotations
+Running the scripts will generate the following files:  
+* .mp4 — Video with cabbage annotations
 
-2 .html — Map of detected cabbages
+* .html — Map of detected cabbages
 
-3 .txt — Timing and related information
+* .txt — Timing and related information
