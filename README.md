@@ -18,8 +18,8 @@ Activate your environment and run everything with these commands:
 
 ```bash
 # 1. Create and activate the Conda environment
-conda env create -f environment.yml
-conda activate yolo-trt
+chmod +x recreate_env.sh
+./recreate_env.sh
 
 # 2. Create the TensorRT FP16 engine
 bash create_TensorRT.sh
