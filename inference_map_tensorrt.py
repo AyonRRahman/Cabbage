@@ -29,7 +29,7 @@ MAP_TYPE = 'individual'
 GRID_SIZE_METERS = 0.5
 METERS_PER_DEG_LAT = 111320
 
-parent_folder = Path('/media/ayon/New Volume')
+
 ENGINE_PATH = Path("best.engine")  # ← Use the TensorRT engine we exported
 
 VIDEO_PATH = "/media/ayon/Windows/Users/User/Downloads/DJI_0797/DJI_0792.MP4"
@@ -38,7 +38,7 @@ SRT_PATH = "/media/ayon/Windows/Users/User/Downloads/DJI_0797/DJI_0792.SRT"
 DEDUPLICATE_DIST_THRES = 25
 EXP_NAMING = f"{MAP_TYPE}_{MAP_EVERY}_trt_new_merge_DDT_{DEDUPLICATE_DIST_THRES}_KDTREE"
 
-OUTPUT_VIDEO_PATH = f"output_geo_detected_trt_new_merge_{EXP_NAMING}.mp4"  # ← added _trt for clarity
+OUTPUT_VIDEO_PATH = f"output_geo_detected_trt_new_merge_{EXP_NAMING}.mp4"  
 MAP_OUTPUT_PATH = f"cabbage_field_map_{EXP_NAMING}.html"
 BENCHMARK_OUTPUT_PATH = f"benchmark_summary_{EXP_NAMING}.txt"
 
