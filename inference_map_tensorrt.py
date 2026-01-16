@@ -22,7 +22,7 @@ TIMINGS = defaultdict(list)
 
 # ===================== CONFIG =====================
 START_MAPPING_FRAME = 1
-MAP_EVERY = 5
+MAP_EVERY = 1
 MAX_FRAMES_TO_MAP = None
 MAP_TYPE = 'individual'
 
