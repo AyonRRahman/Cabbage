@@ -95,7 +95,9 @@ def parse_srt(srt_file: str) -> dict:
 def annotate_frame(frame:np.ndarray, detections: list[tuple[int, int, int, int, float]],
                 BOX_COLOR:tuple[int, int, int]=(0, 0, 255), 
                 BOX_THICKNESS:int=2)->np.ndarray:
-
+    '''
+    Puts the given bboxes and their confidence scores on the frame.
+    '''
     for x1, y1, x2, y2, conf in detections:
         cv2.rectangle(frame, (x1, y1), (x2, y2), BOX_COLOR, BOX_THICKNESS)
         cv2.putText(frame, f"{conf:.2f}", (x1, max(y1 - 5, 10)),
@@ -105,7 +107,9 @@ def annotate_frame(frame:np.ndarray, detections: list[tuple[int, int, int, int, 
 
 
 def check_paths(ENGINE_PATH:str, VIDEO_PATH:str, SRT_PATH:str)->None:
-
+    '''
+    checks if the given paths exists
+    '''
 
     for path in [ENGINE_PATH, VIDEO_PATH, SRT_PATH]:
         if not os.path.exists(path):
@@ -117,8 +121,10 @@ def check_paths(ENGINE_PATH:str, VIDEO_PATH:str, SRT_PATH:str)->None:
 
 
 
-def open_video(VIDEO_PATH, OUTPUT_VIDEO_PATH):
-    # Open video
+def open_video(VIDEO_PATH:str, OUTPUT_VIDEO_PATH:str):
+    '''
+    Opens the video and prepares the output video writer.
+    '''
     cap = cv2.VideoCapture(VIDEO_PATH)
     assert cap.isOpened(), "Cannot open video"
     fps = cap.get(cv2.CAP_PROP_FPS)
