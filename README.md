@@ -26,10 +26,7 @@ chmod +x recreate_env.sh
 bash scripts/create_TensorRT.sh
 
 # 3. Run the TensorRT inference script to generate outputs
-python inference_map_tensorrt.py
-
-# 4. Torch inference (optional, slightly outdated)
-python world_map_project_new.py
+python main.py
 
 ```
 
