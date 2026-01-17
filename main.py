@@ -1,6 +1,5 @@
 # ===================== Imports =====================
 
-import os
 from collections import defaultdict
 
 
@@ -11,10 +10,10 @@ from utils.mapping import create_map, create_cluster_map
 
 
 # ===================== CONFIG =====================
-SAVE_OUT_VIDEO = False
-SAVE_HTML_MAP = False
+SAVE_OUT_VIDEO = True
+SAVE_HTML_MAP = True
 START_MAPPING_FRAME = 1
-MAP_EVERY = 500
+MAP_EVERY = 50
 MAX_FRAMES_TO_MAP = None
 MAP_TYPE = 'individual'
 
