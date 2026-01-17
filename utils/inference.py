@@ -10,7 +10,7 @@ def load_model(ENGINE_PATH:str):
     print(f"Loading TensorRT engine: {ENGINE_PATH}")
     model = YOLO(ENGINE_PATH)
     print("TensorRT engine loaded successfully")
-    
+
     return model
 
 def slice_frame(frame:np.ndarray, slice_size:int=640, overlap:float=0.2)->tuple[list[np.ndarray], list[tuple[int, int, int, int]]]:
@@ -222,6 +222,9 @@ def filter_positions(cabbage_positions:defaultdict[list],
     return filtered_cabbage_positions
 
 def inference_single_frame(model, frame, device, conf_thres, dist_thresh_px, slice_size, overlap_ratio):
+    '''
+    Inference on a single frame
+    '''
     slices, coords = slice_frame(frame, slice_size, overlap_ratio)
     results = model.predict(slices, device=device, conf=conf_thres, verbose=False)
     detections = merge_predictions_vectorized(results, coords)
