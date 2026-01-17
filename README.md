@@ -23,7 +23,7 @@ chmod +x recreate_env.sh
 ./recreate_env.sh
 
 # 2. Create the TensorRT FP16 engine
-bash create_TensorRT.sh
+bash scripts/create_TensorRT.sh
 
 # 3. Run the TensorRT inference script to generate outputs
 python inference_map_tensorrt.py
