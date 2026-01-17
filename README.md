@@ -18,6 +18,7 @@ Activate your environment and run everything with these commands:
 
 ```bash
 # 1. Create and activate the Conda environment
+cd recreate_env
 chmod +x recreate_env.sh
 ./recreate_env.sh
 
