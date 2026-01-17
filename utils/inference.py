@@ -4,6 +4,14 @@ from scipy.spatial import cKDTree
 import numbers
 import math
 from collections import defaultdict
+from ultralytics import YOLO
+
+def load_model(ENGINE_PATH:str):
+    print(f"Loading TensorRT engine: {ENGINE_PATH}")
+    model = YOLO(ENGINE_PATH)
+    print("TensorRT engine loaded successfully")
+    
+    return model
 
 def slice_frame(frame:np.ndarray, slice_size:int=640, overlap:float=0.2)->tuple[list[np.ndarray], list[tuple[int, int, int, int]]]:
     '''

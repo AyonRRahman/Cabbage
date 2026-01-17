@@ -3,12 +3,10 @@
 import os
 from collections import defaultdict
 
-from ultralytics import YOLO
-import cv2
 
 # ===================== Project related imports =====================
 from utils.utils import check_paths, parse_srt, open_video, global_position, annotate_frame
-from utils.inference import inference_single_frame, filter_positions
+from utils.inference import inference_single_frame, filter_positions, load_model
 from utils.mapping import create_map, create_cluster_map
 
 
@@ -54,13 +52,13 @@ SENSOR_WIDTH_MM = 10.26
 def main():
     check_paths(ENGINE_PATH, VIDEO_PATH, SRT_PATH)
     
-    print(f"Loading TensorRT engine: {ENGINE_PATH}")
-    model = YOLO(str(ENGINE_PATH))
-    print("TensorRT engine loaded successfully")
+    model = load_model(ENGINE_PATH)
 
-    print("Parsing SRT file...")
+    if model is None:
+        print("Failed to load model.")
+        return
+    
     frame_meta = parse_srt(SRT_PATH)
-    print(f"Successfully parsed metadata for {len(frame_meta)} frames")
 
 
     # Open video and prepare output writer

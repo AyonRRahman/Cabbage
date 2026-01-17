@@ -53,7 +53,8 @@ def parse_srt(srt_file: str) -> dict:
     Returns:
         dict: A dictionary containing frame data.
     '''
-    
+    print("Parsing SRT file...")
+
     frame_data = {}
     with open(srt_file, "r", encoding="utf-8") as f:
         content = f.read()
@@ -89,6 +90,10 @@ def parse_srt(srt_file: str) -> dict:
                             pass
         if frame_no and lat is not None and lon is not None and alt is not None:
             frame_data[frame_no] = (lat, lon, alt)
+            print(f"Parsed metadata for frame {frame_no}", end="\r")
+            
+    print(f"Successfully parsed metadata for {len(frame_data)} frames")
+
     return frame_data
 
 
