@@ -8,11 +8,13 @@ import cv2
 
 # ===================== Project related imports =====================
 from utils.utils import check_paths, parse_srt, open_video, global_position, annotate_frame
-from utils.inference import slice_frame, merge_predictions_vectorized, filter_positions, deduplicate_by_distance_kdtree
+from utils.inference import inference_single_frame, filter_positions
 from utils.mapping import create_map, create_cluster_map
 
 
 # ===================== CONFIG =====================
+SAVE_OUT_VIDEO = False
+SAVE_HTML_MAP = False
 START_MAPPING_FRAME = 1
 MAP_EVERY = 500
 MAX_FRAMES_TO_MAP = None
@@ -48,6 +50,7 @@ FOCAL_LENGTH_MM = 6.67
 SENSOR_WIDTH_MM = 10.26
 
 
+
 def main():
     check_paths(ENGINE_PATH, VIDEO_PATH, SRT_PATH)
     
@@ -61,7 +64,7 @@ def main():
 
 
     # Open video and prepare output writer
-    cap, out, width, height, fourcc = open_video(VIDEO_PATH, OUTPUT_VIDEO_PATH)
+    cap, out, width, height = open_video(VIDEO_PATH, OUTPUT_VIDEO_PATH, SAVE_OUT_VIDEO)
 
     cabbage_positions = defaultdict(list)
     print("Processing video and projecting cabbages to map...")
@@ -74,9 +77,7 @@ def main():
             break
 
         frame_idx += 1
-        if frame_idx < START_MAPPING_FRAME:
-            continue
-        if frame_idx % MAP_EVERY != 0:
+        if (frame_idx < START_MAPPING_FRAME) or (frame_idx % MAP_EVERY != 0):
             continue
 
         frame_used += 1
@@ -86,28 +87,32 @@ def main():
         print(f"Processing frame {frame_idx}", end="\r")
         meta = frame_meta.get(frame_idx)
         if meta is None:
+            print(f"No metadata for frame {frame_idx}, skipping...")
             continue
-        slices, coords = slice_frame(frame, SLICE_SIZE, OVERLAP_RATIO)
-        results = model.predict(slices, device=DEVICE, conf=CONF_THRES, verbose=False)
-        detections = merge_predictions_vectorized(results, coords)
-        #optional deduplication for making the export video better. Adds a bit of time.
-        detections = deduplicate_by_distance_kdtree(detections, dist_thresh_px=DEDUPLICATE_DIST_THRES)
 
+        detections = inference_single_frame(model, frame, DEVICE, CONF_THRES, DEDUPLICATE_DIST_THRES, SLICE_SIZE, OVERLAP_RATIO)
         cabbage_positions = global_position(detections, meta, frame_idx, cabbage_positions, width, height, SENSOR_WIDTH_MM, FOCAL_LENGTH_MM, METERS_PER_DEG_LAT)
-        frame = annotate_frame(frame, detections, BOX_COLOR, BOX_THICKNESS)
-        out.write(frame)
-    
+
+        if SAVE_OUT_VIDEO:
+            frame = annotate_frame(frame, detections, BOX_COLOR, BOX_THICKNESS)
+            out.write(frame)
+
+
     cap.release()
-    out.release()
+    if SAVE_OUT_VIDEO:
+        out.release()
+    
     print("\nVideo processing complete.")
     print(f"Total cabbage positions found: {len(cabbage_positions)}")
     filtered_cabbage_positions = filter_positions(cabbage_positions, GRID_SIZE_METERS, METERS_PER_DEG_LAT)
     print(f"Filtered cabbage positions: {len(filtered_cabbage_positions)}")
 
-    if MAP_TYPE == 'cluster':
-        create_cluster_map(filtered_cabbage_positions, MAP_OUTPUT_PATH)
-    elif MAP_TYPE == 'individual':
-        create_map(filtered_cabbage_positions, MAP_OUTPUT_PATH)
+    if SAVE_HTML_MAP:
+        print("Creating HTML map...")
+        if MAP_TYPE == 'cluster':
+            create_cluster_map(filtered_cabbage_positions, MAP_OUTPUT_PATH)
+        elif MAP_TYPE == 'individual':
+            create_map(filtered_cabbage_positions, MAP_OUTPUT_PATH)
 
 if __name__ == "__main__":
     main()

@@ -119,9 +119,14 @@ def check_paths(ENGINE_PATH:str, VIDEO_PATH:str, SRT_PATH:str)->None:
             print(f"Path exists: {path}")
 
 
+def create_output_writer(OUTPUT_VIDEO_PATH:str, fourcc:int, fps:float, width:int, height:int):
+    '''
+    Creates a video writer for the output video.
+    '''
+    return cv2.VideoWriter(OUTPUT_VIDEO_PATH, fourcc, fps, (width, height))
 
 
-def open_video(VIDEO_PATH:str, OUTPUT_VIDEO_PATH:str):
+def open_video(VIDEO_PATH:str, OUTPUT_VIDEO_PATH:str, SAVE_OUT_VIDEO:bool=True):
     '''
     Opens the video and prepares the output video writer.
     '''
@@ -131,6 +136,10 @@ def open_video(VIDEO_PATH:str, OUTPUT_VIDEO_PATH:str):
     width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
     height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
     fourcc = cv2.VideoWriter_fourcc(*"mp4v")
-    out = cv2.VideoWriter(OUTPUT_VIDEO_PATH, fourcc, fps, (width, height))
 
-    return cap, out, width, height, fourcc
+    if SAVE_OUT_VIDEO:
+        out = create_output_writer(OUTPUT_VIDEO_PATH, fourcc, fps, width, height)
+    else:
+        out = None
+
+    return cap, out, width, height

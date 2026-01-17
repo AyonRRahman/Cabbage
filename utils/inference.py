@@ -212,3 +212,10 @@ def filter_positions(cabbage_positions:defaultdict[list],
     print(f"Original unique positions: {len(valid_positions)}")
     print(f"Filtered positions: {len(filtered_cabbage_positions)}")
     return filtered_cabbage_positions
+
+def inference_single_frame(model, frame, device, conf_thres, dist_thresh_px, slice_size, overlap_ratio):
+    slices, coords = slice_frame(frame, slice_size, overlap_ratio)
+    results = model.predict(slices, device=device, conf=conf_thres, verbose=False)
+    detections = merge_predictions_vectorized(results, coords)
+    detections = deduplicate_by_distance_kdtree(detections, dist_thresh_px=dist_thresh_px)
+    return detections
