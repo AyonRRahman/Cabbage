@@ -29,11 +29,11 @@ SRT_PATH = "/media/ayon/Windows/Users/User/Downloads/DJI_0797/DJI_0792.SRT"
 
 DEDUPLICATE_DIST_THRES = 25
 
-#change naming 
+#change naming as needed
 EXP_NAMING = f"{MAP_TYPE}_{MAP_EVERY}_trt_new_merge_DDT_{DEDUPLICATE_DIST_THRES}_KDTREE"
 OUTPUT_VIDEO_PATH = f"output_geo_detected_trt_new_merge_{EXP_NAMING}.mp4"  
 MAP_OUTPUT_PATH = f"cabbage_field_map_{EXP_NAMING}.html"
-BENCHMARK_OUTPUT_PATH = f"benchmark_summary_{EXP_NAMING}.txt"
+# BENCHMARK_OUTPUT_PATH = f"benchmark_summary_{EXP_NAMING}.txt"
 
 CONF_THRES = 0.25
 DEVICE = 0  # GPU
