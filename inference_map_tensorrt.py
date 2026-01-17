@@ -411,6 +411,9 @@ def print_benchmark_summary(TIMINGS, BENCHMARK_OUTPUT_PATH):
         f.writelines(summary_lines)
     print(f"Benchmark summary written to: {BENCHMARK_OUTPUT_PATH}")
 
+
+
+
 if __name__ == "__main__":
     total_t0 = time.perf_counter()
 
