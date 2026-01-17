@@ -7,61 +7,25 @@ from collections import defaultdict
 from utils.utils import check_paths, parse_srt, open_video, global_position, annotate_frame
 from utils.inference import inference_single_frame, filter_positions, load_model
 from utils.mapping import create_map, create_cluster_map
-
+from config import Config
 
 # ===================== CONFIG =====================
-SAVE_OUT_VIDEO = True
-SAVE_HTML_MAP = True
-START_MAPPING_FRAME = 1
-MAP_EVERY = 50
-MAX_FRAMES_TO_MAP = None
-MAP_TYPE = 'individual'
-
-GRID_SIZE_METERS = 0.5
-METERS_PER_DEG_LAT = 111320
-
-
-ENGINE_PATH = "best.engine"  # ← Use the TensorRT engine we exported
-
-VIDEO_PATH = "/media/ayon/Windows/Users/User/Downloads/DJI_0797/DJI_0792.MP4"
-SRT_PATH = "/media/ayon/Windows/Users/User/Downloads/DJI_0797/DJI_0792.SRT"
-
-DEDUPLICATE_DIST_THRES = 25
-
-#change naming as needed
-EXP_NAMING = f"{MAP_TYPE}_{MAP_EVERY}_trt_new_merge_DDT_{DEDUPLICATE_DIST_THRES}_KDTREE"
-OUTPUT_VIDEO_PATH = f"output_geo_detected_trt_new_merge_{EXP_NAMING}.mp4"  
-MAP_OUTPUT_PATH = f"cabbage_field_map_{EXP_NAMING}.html"
-# BENCHMARK_OUTPUT_PATH = f"benchmark_summary_{EXP_NAMING}.txt"
-
-CONF_THRES = 0.25
-DEVICE = 0  # GPU
-SLICE_SIZE = 640
-OVERLAP_RATIO = 0.2
-BOX_COLOR = (0, 0, 255)  # RED
-BOX_THICKNESS = 2
-TEXT_SCALE = 0.5
-TEXT_THICKNESS = 1
-
-FOCAL_LENGTH_MM = 6.67
-SENSOR_WIDTH_MM = 10.26
-
-
+cfg = Config()
 
 def main():
-    check_paths(ENGINE_PATH, VIDEO_PATH, SRT_PATH)
-    
-    model = load_model(ENGINE_PATH)
+    check_paths(cfg.ENGINE_PATH, cfg.VIDEO_PATH, cfg.SRT_PATH)
+
+    model = load_model(cfg.ENGINE_PATH)
 
     if model is None:
         print("Failed to load model.")
         return
-    
-    frame_meta = parse_srt(SRT_PATH)
+
+    frame_meta = parse_srt(cfg.SRT_PATH)
 
 
     # Open video and prepare output writer
-    cap, out, width, height = open_video(VIDEO_PATH, OUTPUT_VIDEO_PATH, SAVE_OUT_VIDEO)
+    cap, out, width, height = open_video(cfg.VIDEO_PATH, cfg.output_video_path(), cfg.SAVE_OUT_VIDEO)
 
     cabbage_positions = defaultdict(list)
     print("Processing video and projecting cabbages to map...")
@@ -74,11 +38,11 @@ def main():
             break
 
         frame_idx += 1
-        if (frame_idx < START_MAPPING_FRAME) or (frame_idx % MAP_EVERY != 0):
+        if (frame_idx < cfg.START_MAPPING_FRAME) or (frame_idx % cfg.MAP_EVERY != 0):
             continue
 
         frame_used += 1
-        if MAX_FRAMES_TO_MAP and frame_used == MAX_FRAMES_TO_MAP:
+        if cfg.MAX_FRAMES_TO_MAP and frame_used == cfg.MAX_FRAMES_TO_MAP:
             break
 
         print(f"Processing frame {frame_idx}", end="\r")
@@ -87,29 +51,29 @@ def main():
             print(f"No metadata for frame {frame_idx}, skipping...")
             continue
 
-        detections = inference_single_frame(model, frame, DEVICE, CONF_THRES, DEDUPLICATE_DIST_THRES, SLICE_SIZE, OVERLAP_RATIO)
-        cabbage_positions = global_position(detections, meta, frame_idx, cabbage_positions, width, height, SENSOR_WIDTH_MM, FOCAL_LENGTH_MM, METERS_PER_DEG_LAT)
+        detections = inference_single_frame(model, frame, cfg.DEVICE, cfg.CONF_THRES, cfg.DEDUPLICATE_DIST_THRES, cfg.SLICE_SIZE, cfg.OVERLAP_RATIO)
+        cabbage_positions = global_position(detections, meta, frame_idx, cabbage_positions, width, height, cfg.SENSOR_WIDTH_MM, cfg.FOCAL_LENGTH_MM, cfg.METERS_PER_DEG_LAT)
 
-        if SAVE_OUT_VIDEO:
-            frame = annotate_frame(frame, detections, BOX_COLOR, BOX_THICKNESS)
+        if cfg.SAVE_OUT_VIDEO:
+            frame = annotate_frame(frame, detections, cfg.BOX_COLOR, cfg.BOX_THICKNESS)
             out.write(frame)
 
 
     cap.release()
-    if SAVE_OUT_VIDEO:
+    if cfg.SAVE_OUT_VIDEO:
         out.release()
     
     print("\nVideo processing complete.")
     print(f"Total cabbage positions found: {len(cabbage_positions)}")
-    filtered_cabbage_positions = filter_positions(cabbage_positions, GRID_SIZE_METERS, METERS_PER_DEG_LAT)
+    filtered_cabbage_positions = filter_positions(cabbage_positions, cfg.GRID_SIZE_METERS, cfg.METERS_PER_DEG_LAT)
     print(f"Filtered cabbage positions: {len(filtered_cabbage_positions)}")
 
-    if SAVE_HTML_MAP:
+    if cfg.SAVE_HTML_MAP:
         print("Creating HTML map...")
-        if MAP_TYPE == 'cluster':
-            create_cluster_map(filtered_cabbage_positions, MAP_OUTPUT_PATH)
-        elif MAP_TYPE == 'individual':
-            create_map(filtered_cabbage_positions, MAP_OUTPUT_PATH)
+        if cfg.MAP_TYPE == 'cluster':
+            create_cluster_map(filtered_cabbage_positions, cfg.map_output_path())
+        elif cfg.MAP_TYPE == 'individual':
+            create_map(filtered_cabbage_positions, cfg.map_output_path())
 
 if __name__ == "__main__":
     main()
